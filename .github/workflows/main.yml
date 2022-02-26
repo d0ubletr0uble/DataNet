@@ -1,0 +1,31 @@
+on:
+  push:
+    branches:
+      - master
+
+name: CI
+
+jobs:
+  devflow:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    
+    - uses: okteto/context@latest
+      with:
+        token: ${{ secrets.OKTETO_TOKEN }}
+    
+    - name: Push changes
+      uses: okteto/push@latest
+      with:
+        namespace: d0ubletr0uble
+        working-directory: backend
+    
+    - name: Restart containers
+      env: 
+        KUBECONFIG: ~/.kube/config
+      run: |
+        echo -n ${{ secrets.KUBE_CONFIG }} | base64 -d  > kubeconfig
+        kubectl rollout restart deployment datanet-backend --kubeconfig kubeconfig
+        
+        
