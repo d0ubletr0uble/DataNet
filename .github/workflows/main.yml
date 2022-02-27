@@ -15,17 +15,22 @@ jobs:
       with:
         token: ${{ secrets.OKTETO_TOKEN }}
     
-    - name: Push changes
+    - name: Push changes backend
       uses: okteto/push@latest
       with:
         namespace: d0ubletr0uble
         working-directory: backend
-    
-    - name: Restart containers
+
+    - name: Push changes frontend
+      uses: okteto/push@latest
+      with:
+        namespace: d0ubletr0uble
+        working-directory: frontend
+
+    - name: Restart all containers
       env: 
         KUBECONFIG: ~/.kube/config
       run: |
         echo -n ${{ secrets.KUBE_CONFIG }} | base64 -d  > kubeconfig
         kubectl rollout restart deployment datanet-backend --kubeconfig kubeconfig
-        
-        
+        kubectl rollout restart deployment datanet-frontend --kubeconfig kubeconfig
