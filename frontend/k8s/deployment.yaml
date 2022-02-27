@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: datanet-frontend
+spec:
+  selector:
+    matchLabels:
+      app: datanet-frontend
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: datanet-frontend
+    spec:
+      containers:
+        - name: datanet-frontend
+          image: okteto.dev/datanet-frontend:latest
+          ports:
+            - containerPort: 80

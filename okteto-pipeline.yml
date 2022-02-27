@@ -2,3 +2,5 @@ icon: https://github.com/d0ubletr0uble/DataNet/blob/master/icon.png
 deploy:
   - okteto build -t okteto.dev/datanet-backend:latest backend
   - kubectl apply -f backend/k8s
+  - okteto build -t okteto.dev/datanet-frontend:latest frontend
+  - kubectl apply -f frontend/k8s

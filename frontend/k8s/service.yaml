@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: datanet-frontend-service
+  annotations:
+    dev.okteto.com/auto-ingress: "true"
+spec:
+  selector:
+    app: datanet-frontend
+  ports:
+    - port: 80
+      targetPort: 80
