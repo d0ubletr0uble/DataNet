@@ -1,8 +1,10 @@
 import 'dart:io';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:http/http.dart';
+import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart' as parser;
 
 class Camera extends StatefulWidget {
   const Camera({Key? key}) : super(key: key);
@@ -18,7 +20,7 @@ class _CameraState extends State<Camera> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar:
-      AppBar(title: const Text('DataNet'), backgroundColor: Colors.blue),
+          AppBar(title: const Text('DataNet'), backgroundColor: Colors.blue),
       body: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 800),
@@ -38,8 +40,8 @@ class _CameraState extends State<Camera> {
                   padding: const EdgeInsets.all(5),
                   children: [
                     OutlinedButton(
-                      onPressed: () {
-                        _pickImage(ImageSource.camera);
+                      onPressed: () async {
+                        await _pickImage(ImageSource.camera);
                       },
                       child: const SizedBox.expand(
                         child: FittedBox(
@@ -48,8 +50,8 @@ class _CameraState extends State<Camera> {
                       ),
                     ),
                     OutlinedButton(
-                      onPressed: () {
-                        _pickImage(ImageSource.gallery);
+                      onPressed: () async {
+                        await _pickImage(ImageSource.gallery);
                       },
                       child: const SizedBox.expand(
                         child: FittedBox(
@@ -67,23 +69,20 @@ class _CameraState extends State<Camera> {
     );
   }
 
-  /// Get from gallery
   _pickImage(ImageSource source) async {
     final pickedFile = await ImagePicker().pickImage(
       source: source,
-      maxWidth: 1800,
-      maxHeight: 1800,
+      maxWidth: 1080,
+      maxHeight: 1080,
     );
+
     if (pickedFile != null) {
-      // var stream = ByteStream(pickedFile.openRead());
-      var request = MultipartRequest('POST', Uri.parse('http://127.0.0.1:4444'));
-      var file = MultipartFile('file', pickedFile.openRead(), await pickedFile.length());
-      request.files.add(file);
-      var res = await request.send();
+      var bytes = await pickedFile.readAsBytes();
+      var res = await http.post(
+          Uri.parse('http://192.168.6.104:8080/image/upload'),
+          body: {'image': base64Encode(bytes)});
+
       print(res);
-      // setState(() {
-      //   _imageFile = pickedFile;
-      // });
     }
   }
 }

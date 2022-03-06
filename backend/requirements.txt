@@ -1,3 +1,8 @@
 fastapi~=0.74.1
-uvicorn[standard]~=0.16.0
+uvicorn[standard]
+pydantic~=1.9.0
 python-multipart
+opencv-python~=4.5.5.62
+numpy~=1.19.5
+mtcnn~=0.1.1
+tensorflow~=2.6.2
