@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: attu
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: attu
+  template:
+    metadata:
+      labels:
+        app: attu
+    spec:
+      containers:
+      - name: attu
+        image: zilliz/attu:latest
+        ports:
+          - containerPort: 3000
+        env:
+        - name: HOST_URL
+          value: "https://attu-d0ubletr0uble.cloud.okteto.net"
+        - name: MILVUS_URL
+          value: "datanet-milvus:19530"

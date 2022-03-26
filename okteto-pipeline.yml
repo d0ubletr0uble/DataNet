@@ -4,3 +4,4 @@ deploy:
   - kubectl apply -f backend/k8s
   - okteto build -t okteto.dev/datanet-frontend:latest frontend
   - kubectl apply -f frontend/k8s
+  - kubectl apply -R -f datanet_platform/k8s

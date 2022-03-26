@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: datanet-minio
+spec:
+  selector:
+    app: datanet-minio
+  ports:
+  - port: 9000

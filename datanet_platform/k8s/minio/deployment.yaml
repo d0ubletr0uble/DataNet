@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: datanet-minio
+spec:
+  selector:
+    matchLabels:
+      app: datanet-minio
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: datanet-minio
+    spec:
+      containers:
+        - name: datanet-minio
+          image: minio/minio:RELEASE.2020-12-03T00-03-10Z
+          env:
+            - name: MINIO_ACCESS_KEY
+              value: minioadmin
+            - name: MINIO_SECRET_KEY
+              value: minioadmin
+          command: ["minio"]
+          args: ["server", "/minio_data"]
+          ports:
+          - containerPort: 9000
+          volumeMounts:
+            - name: datanet-volume
+              mountPath: /minio_data
+              subPath: minio-storage
+          resources:
+            limits:
+              memory: "3Gi"
+              cpu: "1"
+      volumes:
+        - name: datanet-volume
+          persistentVolumeClaim:
+            claimName: datanet-volume

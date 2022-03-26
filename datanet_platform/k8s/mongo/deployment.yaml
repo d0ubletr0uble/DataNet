@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: datanet-mongodb
+spec:
+  selector:
+    matchLabels:
+      app: datanet-mongodb
+  template:
+    metadata:
+      labels:
+        app: datanet-mongodb
+    spec:
+      containers:
+      - name: datanet-mongodb
+        image: mongo
+        resources:
+          limits:
+            memory: "3Gi"
+            cpu: "1"
+        ports:
+        - containerPort: 27017
+        volumeMounts:
+          - name: datanet-volume
+            mountPath: /data/db
+            subPath: mongodb-storage
+      volumes:
+        - name: datanet-volume
+          persistentVolumeClaim:
+            claimName: datanet-volume

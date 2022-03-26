@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: datanet-milvus
+spec:
+  selector:
+    app: datanet-milvus
+  ports:
+  - port: 19530
