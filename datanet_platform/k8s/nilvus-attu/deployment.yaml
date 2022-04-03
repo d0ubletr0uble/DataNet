@@ -1,19 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: attu
+  name: datanet-attu
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: attu
+      app: datanet-attu
   template:
     metadata:
       labels:
-        app: attu
+        app: datanet-attu
     spec:
       containers:
-      - name: attu
+      - name: datanet-attu
         image: zilliz/attu:latest
         ports:
           - containerPort: 3000
