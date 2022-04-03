@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 import uvicorn
 from routes import image
+from routes import users
 import ai_models.detector as facenet
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -15,6 +16,7 @@ app.add_middleware(
 )
 
 app.include_router(image.router, prefix='/image', tags=['image'])
+app.include_router(users.router, prefix='/users', tags=['image'])
 
 detector = facenet.instance
 

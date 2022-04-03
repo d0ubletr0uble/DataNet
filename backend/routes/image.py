@@ -2,9 +2,9 @@ import base64
 from typing import List
 
 import cv2
-import numpy as np
 from fastapi import APIRouter, Form
 from pydantic import BaseModel
+from backend.utils import utils
 
 from backend.ai_models import detector
 
@@ -12,20 +12,32 @@ model = detector.instance
 router = APIRouter()
 
 
+class FaceSummary(BaseModel):
+    face: str
+    embedding: List[float]
+
+
 class UploadSummary(BaseModel):
-    embeddings: List[List[float]] = []
-    faces: List[bytes] = []
+    faces: List[FaceSummary] = []
 
 
 @router.post('/upload', response_model=UploadSummary)
 def upload(image: str = Form(...)):
-    buffer = np.frombuffer(base64.b64decode(image), dtype=np.uint8)
-    img = cv2.imdecode(buffer, flags=1)
+    img = utils.base64_to_cv2(image)
+    detected_faces, prepared_faces = model.get_faces(img)
 
-    faces = model.get_faces(img)
+    embeddings = model.get_embeddings(prepared_faces)
+
     result = UploadSummary()
-    if len(faces) > 0:
-        result.embeddings = model.get_embeddings(model.prepare_faces(faces)).tolist()
-        result.faces = [base64.b64encode(cv2.imencode('.jpg', face)[1].tostring()) for face in faces]
+    if not len(detected_faces) > 0:
+        return result
+
+    result.faces = [
+        FaceSummary(
+            face=base64.b64encode(cv2.imencode('.jpg', cv2.cvtColor(face, cv2.COLOR_RGB2BGR))[1].tostring()),
+            embedding=emb.tolist(),
+        )
+        for face, emb in zip(detected_faces, embeddings)
+    ]
 
     return result
