@@ -28,13 +28,33 @@ class FaceList(BaseModel):
     faces: List[FaceInput]
 
 
+class UsersResponse(BaseModel):
+    users: List[dict]
+
+    class Config:
+        schema_extra = {
+            'example': {
+                'users': [
+                    {'_id': 432274227563069451, 'data': {'name': 'John Smith', 'age': 20}},
+                    {'_id': 562627439967832726, 'data': {'type': 'student', 'modules': ['P1456235', 'P1655578']}},
+                    {'_id': 465612315423184238, 'data': {'name': 'Foo Bar', 'vip': True}},
+                ]
+            }
+        }
+
+
+@router.get('', status_code=http.HTTPStatus.OK, response_model=UsersResponse)
+def list_users():
+    users = mongodb.users.find()
+    return {'users': list(users)}
+
+
 @router.post('', status_code=http.HTTPStatus.CREATED)
 async def upload(req: FaceList):
     if len(req.faces) == 0:
         return None
 
     faces = [utils.base64_to_cv2(f.face) for f in req.faces]
-    # embeddings = model.get_embeddings(model.prepare_faces(faces)).tolist()
 
     # data persistence
     resp = milvus.users.insert([[f.embedding for f in req.faces]])
@@ -47,6 +67,7 @@ async def upload(req: FaceList):
 
     for face, key in zip(faces, resp.primary_keys):
         s3.put_object(
+            ACL='public-read',
             Bucket='users',
             Key=f'{key}.jpg',
             Body=cv2.imencode('.jpg', cv2.cvtColor(face, cv2.COLOR_RGB2BGR))[1].tostring(),
