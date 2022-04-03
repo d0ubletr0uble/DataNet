@@ -1,10 +1,11 @@
-import 'dart:io';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
-import 'package:http_parser/http_parser.dart' as parser;
+import 'package:myapp/constants.dart';
+import 'package:myapp/screens/face_list.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 class Camera extends StatefulWidget {
   const Camera({Key? key}) : super(key: key);
@@ -14,8 +15,6 @@ class Camera extends StatefulWidget {
 }
 
 class _CameraState extends State<Camera> {
-  XFile? _imageFile;
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,16 +28,15 @@ class _CameraState extends State<Camera> {
             child: FractionallySizedBox(
               heightFactor: 0.8,
               widthFactor: 0.9,
-              child: Container(
-                color: Colors.grey,
-                child: GridView.count(
-                  crossAxisCount: 2,
-                  childAspectRatio: 0.8,
-                  crossAxisSpacing: 50,
-                  shrinkWrap: true,
-                  primary: false,
-                  padding: const EdgeInsets.all(5),
-                  children: [
+              child: GridView.count(
+                crossAxisCount: kIsWeb ? 1 : 2,
+                childAspectRatio: kIsWeb ? 4 : 0.8,
+                crossAxisSpacing: 50,
+                shrinkWrap: true,
+                primary: false,
+                padding: const EdgeInsets.all(5),
+                children: [
+                  if (!kIsWeb)
                     OutlinedButton(
                       onPressed: () async {
                         await _pickImage(ImageSource.camera);
@@ -49,7 +47,9 @@ class _CameraState extends State<Camera> {
                         ),
                       ),
                     ),
-                    OutlinedButton(
+                  ConstrainedBox(
+                    constraints: BoxConstraints(maxHeight: 10),
+                    child: OutlinedButton(
                       onPressed: () async {
                         await _pickImage(ImageSource.gallery);
                       },
@@ -59,8 +59,8 @@ class _CameraState extends State<Camera> {
                         ),
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ),
@@ -77,12 +77,41 @@ class _CameraState extends State<Camera> {
     );
 
     if (pickedFile != null) {
-      var bytes = await pickedFile.readAsBytes();
-      var res = await http.post(
-          Uri.parse('http://192.168.6.104:8080/image/upload'),
-          body: {'image': base64Encode(bytes)});
+      final bytes = base64Encode(await pickedFile.readAsBytes());
+      final res = await http.post(
+        Uri.parse('${Constants.api}/image/upload'),
+        body: {'image': bytes},
+      );
 
-      print(res);
+      final faceList = FaceList.fromJson(jsonDecode(res.body));
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => FaceListInput(faceList: faceList)),
+      );
     }
+  }
+}
+
+class FaceList {
+  final List<Face> faces;
+
+  FaceList({required this.faces});
+
+  factory FaceList.fromJson(Map<String, dynamic> json) {
+    return FaceList(
+        faces: List<Face>.from(json['faces'].map((f) => Face.fromJson(f))));
+  }
+}
+
+class Face {
+  final String face;
+  final List<double> embedding;
+
+  Face({required this.face, required this.embedding});
+
+  factory Face.fromJson(Map<String, dynamic> json) {
+    return Face(
+        face: json['face'], embedding: json['embedding'].cast<double>());
   }
 }
