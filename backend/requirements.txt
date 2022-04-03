@@ -8,3 +8,4 @@ mtcnn~=0.1.1
 tensorflow~=2.6.2
 pymongo~=4.0.2
 pymilvus~=2.0.1
+Pillow~=8.4.0

@@ -8,8 +8,8 @@ from pymilvus import (
 
 class Milvus:
     def __init__(self):
-        # connections.connect('default', host='datanet-milvus', port='19530')
-        connections.connect('default', host='127.0.0.1', port='19530')
+        connections.connect('default', host='datanet-milvus', port='19530')
+        # connections.connect('default', host='127.0.0.1', port='19530')
 
         if not utility.has_collection('users'):
             schema = CollectionSchema([
