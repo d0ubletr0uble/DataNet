@@ -1,4 +1,5 @@
 import http
+import json
 from typing import List, Any
 
 import cv2
@@ -35,17 +36,18 @@ class UsersResponse(BaseModel):
         schema_extra = {
             'example': {
                 'users': [
-                    {'_id': 432274227563069451, 'data': {'name': 'John Smith', 'age': 20}},
-                    {'_id': 562627439967832726, 'data': {'type': 'student', 'modules': ['P1456235', 'P1655578']}},
-                    {'_id': 465612315423184238, 'data': {'name': 'Foo Bar', 'vip': True}},
+                    {'_id': 432274227563069451, 'name': 'John Smith', 'age': 20},
+                    {'_id': 562627439967832726, 'type': 'student', 'modules': ['P1456235', 'P1655578']},
+                    {'_id': 465612315423184238, 'name': 'Foo Bar', 'vip': True},
                 ]
             }
         }
 
 
-@router.get('', status_code=http.HTTPStatus.OK, response_model=UsersResponse)
-def list_users():
-    users = mongodb.users.find()
+@router.post('/search', status_code=http.HTTPStatus.OK, response_model=UsersResponse)
+async def list_users(req: Request):
+    query = await req.json()
+    users = mongodb.users.find(query)
     return {'users': list(users)}
 
 
@@ -60,7 +62,7 @@ async def upload(req: FaceList):
     resp = milvus.users.insert([[f.embedding for f in req.faces]])
 
     mongodb.users.insert_many([
-        {'_id': pk, 'data': f.data}
+        {'_id': pk, **f.data}
         for f, pk
         in zip(req.faces, resp.primary_keys)
     ])
