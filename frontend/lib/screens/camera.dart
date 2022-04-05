@@ -77,13 +77,15 @@ class _CameraState extends State<Camera> {
     );
 
     if (pickedFile != null) {
-      final bytes = base64Encode(await pickedFile.readAsBytes());
-      final res = await http.post(
-        Uri.parse('${Constants.api}/image/upload'),
-        body: {'image': bytes},
-      );
+      final faceList = pickedFile
+          .readAsBytes()
+          .then((bytes) => base64Encode(bytes))
+          .then((image) => http.post(
+                Uri.parse('${Constants.api}/image/upload'),
+                body: {'image': image},
+              ))
+          .then((res) => FaceList.fromJson(jsonDecode(res.body)));
 
-      final faceList = FaceList.fromJson(jsonDecode(res.body));
       Navigator.push(
         context,
         MaterialPageRoute(

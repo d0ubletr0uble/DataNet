@@ -6,6 +6,7 @@ import 'package:json_editor/json_editor.dart';
 import 'package:myapp/screens/camera.dart';
 import 'package:myapp/screens/input.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 import '../constants.dart';
 
@@ -18,7 +19,7 @@ class FaceUpload {
 }
 
 class FaceListInput extends StatelessWidget {
-  final FaceList faceList;
+  final Future<FaceList> faceList;
   final Map<String, FaceUpload> _results = {};
 
   FaceListInput({Key? key, required this.faceList}) : super(key: key);
@@ -27,61 +28,78 @@ class FaceListInput extends StatelessWidget {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('DataNet'),
-        backgroundColor: Colors.blue,
-      ),
-      body: ListView(
-        itemExtent: size.height / 4,
-        children: ListTile.divideTiles(
-          context: context,
-          tiles: faceList.faces.map((f) => FaceRow(
-                size: size,
-                imageString: f.face,
-                embedding: f.embedding,
-                onSave: (data) {
-                  if (data != null) {
-                    _results[f.face] = FaceUpload(
-                      face: f.face,
-                      embedding: f.embedding,
-                      data: data,
-                    );
-                  }
-                },
-              )),
-        ).toList(),
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        icon: const Icon(Icons.save),
-        label: const Text('Save'),
-        onPressed: () async {
-          final b = jsonEncode({
-            'faces': _results.entries
-                .map((e) => {
-                      'face': e.key,
-                      'embedding': e.value.embedding,
-                      'data': e.value.data.toObject(),
-                    })
-                .toList()
-          });
-          final res = await http.post(
-            Uri.parse('${Constants.api}/users'),
-            headers: {HttpHeaders.contentTypeHeader: 'application/json'},
-            body: b,
-          );
-          if (res.statusCode == 201) {
-            const snackBar = SnackBar(content: Text('users created'));
-            ScaffoldMessenger.of(context)
-                .showSnackBar(snackBar)
-                .closed
-                .then((_) => Navigator.popUntil(context, ModalRoute.withName('/')));
-          } else {
-            var snackBar = SnackBar(content: Text(res.body));
-            ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    return FutureBuilder<FaceList>(
+      future: faceList,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.done) {
+          if (!snapshot.hasData) {
+            Future.delayed(
+                const Duration(seconds: 2), () => Navigator.of(context).pop());
+            return const Scaffold(
+                body: AlertDialog(title: Text('no faces were found')));
           }
-        },
-      ),
+          return Scaffold(
+            appBar: AppBar(
+              title: const Text('DataNet'),
+              backgroundColor: Colors.blue,
+            ),
+            body: ListView(
+              itemExtent: size.height / 4,
+              children: ListTile.divideTiles(
+                context: context,
+                tiles: snapshot.data!.faces.map((f) => FaceRow(
+                      size: size,
+                      imageString: f.face,
+                      embedding: f.embedding,
+                      onSave: (data) {
+                        if (data != null) {
+                          _results[f.face] = FaceUpload(
+                            face: f.face,
+                            embedding: f.embedding,
+                            data: data,
+                          );
+                        }
+                      },
+                    )),
+              ).toList(),
+            ),
+            floatingActionButton: FloatingActionButton.extended(
+              icon: const Icon(Icons.save),
+              label: const Text('Save'),
+              onPressed: () async {
+                final b = jsonEncode({
+                  'faces': _results.entries
+                      .map((e) => {
+                            'face': e.key,
+                            'embedding': e.value.embedding,
+                            'data': e.value.data.toObject(),
+                          })
+                      .toList()
+                });
+                final res = await http.post(
+                  Uri.parse('${Constants.api}/users'),
+                  headers: {HttpHeaders.contentTypeHeader: 'application/json'},
+                  body: b,
+                );
+                if (res.statusCode == 201) {
+                  const snackBar = SnackBar(content: Text('users created'));
+                  ScaffoldMessenger.of(context)
+                      .showSnackBar(snackBar)
+                      .closed
+                      .then((_) => Navigator.popUntil(
+                          context, ModalRoute.withName('/')));
+                } else {
+                  var snackBar = SnackBar(content: Text(res.body));
+                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                }
+              },
+            ),
+          );
+        } else {
+          var w = MediaQuery.of(context).size.width;
+          return Scaffold(body: SpinKitSpinningLines(color: Colors.blue, lineWidth: w/60, size: w/4));
+        }
+      },
     );
   }
 }
