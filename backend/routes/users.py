@@ -36,9 +36,9 @@ class UsersResponse(BaseModel):
         schema_extra = {
             'example': {
                 'users': [
-                    {'_id': 432274227563069451, 'name': 'John Smith', 'age': 20},
-                    {'_id': 562627439967832726, 'type': 'student', 'modules': ['P1456235', 'P1655578']},
-                    {'_id': 465612315423184238, 'name': 'Foo Bar', 'vip': True},
+                    {'_id': '432274227563069451', 'name': 'John Smith', 'age': 20},
+                    {'_id': '562627439967832726', 'type': 'student', 'modules': ['P1456235', 'P1655578']},
+                    {'_id': '465612315423184238', 'name': 'Foo Bar', 'vip': True},
                 ]
             }
         }
@@ -62,7 +62,7 @@ async def upload(req: FaceList):
     resp = milvus.users.insert([[f.embedding for f in req.faces]])
 
     mongodb.users.insert_many([
-        {'_id': pk, **f.data}
+        {'_id': str(pk), **f.data}
         for f, pk
         in zip(req.faces, resp.primary_keys)
     ])
