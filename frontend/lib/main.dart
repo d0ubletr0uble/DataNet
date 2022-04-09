@@ -17,6 +17,9 @@ void main() {
   HttpOverrides.global = MyHttpOverrides();
 
   runApp(MaterialApp(
+    theme: ThemeData(
+      brightness: Brightness.dark
+    ),
     title: 'DataNet',
     routes: {
       '/': (context) => const Home(),

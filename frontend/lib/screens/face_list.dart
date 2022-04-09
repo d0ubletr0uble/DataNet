@@ -6,7 +6,7 @@ import 'package:json_editor/json_editor.dart';
 import 'package:myapp/screens/camera.dart';
 import 'package:myapp/screens/input.dart';
 import 'package:http/http.dart' as http;
-import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:myapp/screens/loading.dart';
 
 import '../constants.dart';
 
@@ -96,8 +96,7 @@ class FaceListInput extends StatelessWidget {
             ),
           );
         } else {
-          var w = MediaQuery.of(context).size.width;
-          return Scaffold(body: SpinKitSpinningLines(color: Colors.blue, lineWidth: w/60, size: w/4));
+          return const LoadingScreen();
         }
       },
     );
@@ -144,7 +143,18 @@ class FaceRow extends StatelessWidget {
                 onPressed: () async {
                   final data = await Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const Input()),
+                    MaterialPageRoute(
+                      builder: (context) => const Input(
+                        example: '''
+                      {
+                        // Enter JSON data
+                        "name": "John Smith",
+                        "age": 20
+                      }
+                      ''',
+                        buttonText: 'Save',
+                      ),
+                    ),
                   );
                   onSave(data);
                 },

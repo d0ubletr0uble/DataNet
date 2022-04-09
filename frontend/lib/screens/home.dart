@@ -1,4 +1,12 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:json_editor/json_editor.dart';
+import 'package:myapp/screens/edit.dart';
+import '../constants.dart';
+import 'input.dart';
 
 class Home extends StatelessWidget {
   const Home({Key? key}) : super(key: key);
@@ -31,7 +39,7 @@ class Home extends StatelessWidget {
                   onPressed: () => Navigator.pushNamed(context, '/camera'),
                   child: const SizedBox.expand(
                     child: FittedBox(
-                      child: Icon(Icons.camera_alt),
+                      child: Icon(Icons.person_add),
                     ),
                   ),
                 ),
@@ -39,7 +47,36 @@ class Home extends StatelessWidget {
                   onPressed: () {},
                   child: const SizedBox.expand(
                     child: FittedBox(
-                      child: Icon(Icons.search),
+                      child: Icon(Icons.person_search),
+                    ),
+                  ),
+                ),
+                OutlinedButton(
+                  onPressed: () async {
+                    JsonElement search = await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              const Input(example: '{}', buttonText: 'Search')),
+                    ) ?? JsonElement(value: '{}');
+
+                    final users = http.post(
+                      Uri.parse('${Constants.api}/users/search'),
+                      headers: {
+                        HttpHeaders.contentTypeHeader: 'application/json'
+                      },
+                      body: search.toString(),
+                    ).then((res) => res.body);
+
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => Edit(users: users)),
+                    );
+                  },
+                  child: const SizedBox.expand(
+                    child: FittedBox(
+                      child: Icon(Icons.find_in_page_rounded),
                     ),
                   ),
                 ),
@@ -47,15 +84,7 @@ class Home extends StatelessWidget {
                   onPressed: () {},
                   child: const SizedBox.expand(
                     child: FittedBox(
-                      child: Icon(Icons.portrait_outlined),
-                    ),
-                  ),
-                ),
-                OutlinedButton(
-                  onPressed: () {},
-                  child: const SizedBox.expand(
-                    child: FittedBox(
-                      child: Icon(Icons.assignment_rounded),
+                      child: Icon(Icons.edit),
                     ),
                   ),
                 ),

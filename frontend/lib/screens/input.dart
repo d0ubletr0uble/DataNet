@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:json_editor/json_editor.dart';
 
 class Input extends StatefulWidget {
-  const Input({Key? key}) : super(key: key);
+  final String example;
+  final String buttonText;
+  const Input({Key? key, required this.example, required this.buttonText}) : super(key: key);
+
 
   @override
   State<Input> createState() => _InputState();
@@ -42,20 +45,14 @@ class _InputState extends State<Input> {
                 ElevatedButton(
                     onPressed: () => Navigator.of(context)
                         .pop(_elementResult),
-                    child: const Text('Save'))
+                    child: Text(widget.buttonText))
               ],
             ),
             Expanded(
               child: Theme(
                 data: _darkMode ? ThemeData.dark() : ThemeData.light(),
                 child: JsonEditor.string(
-                  jsonString: '''
-                      {
-                        // Enter JSON data
-                        "name": "John Smith",
-                        "age": 20
-                      }
-                      ''',
+                  jsonString: widget.example,
                   onValueChanged: (value) => _elementResult = value,
                 ),
               ),
