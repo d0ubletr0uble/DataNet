@@ -76,3 +76,16 @@ async def upload(req: FaceList):
         )
 
     return None
+
+
+@router.put('/{user_id}', status_code=http.HTTPStatus.OK)
+async def edit_user(user_id: str, req: Request):
+    data = await req.json()
+    data['_id'] = user_id
+
+    mongodb.users.replace_one(
+        {'_id': user_id},
+        data
+    )
+
+    return data
