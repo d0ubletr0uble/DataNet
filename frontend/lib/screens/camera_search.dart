@@ -6,20 +6,23 @@ import 'package:http/http.dart' as http;
 import 'package:myapp/constants.dart';
 import 'package:myapp/screens/face_list.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:myapp/screens/face_list_find.dart';
 
-class Camera extends StatefulWidget {
-  const Camera({Key? key}) : super(key: key);
+import 'camera.dart';
+
+class CameraSearch extends StatefulWidget {
+  const CameraSearch({Key? key}) : super(key: key);
 
   @override
-  State<Camera> createState() => _CameraState();
+  State<CameraSearch> createState() => _CameraSearchState();
 }
 
-class _CameraState extends State<Camera> {
+class _CameraSearchState extends State<CameraSearch> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar:
-          AppBar(title: const Text('DataNet'), backgroundColor: Colors.blue),
+      AppBar(title: const Text('DataNet'), backgroundColor: Colors.blue),
       body: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 800),
@@ -81,39 +84,16 @@ class _CameraState extends State<Camera> {
           .readAsBytes()
           .then((bytes) => base64Encode(bytes))
           .then((image) => http.post(
-                Uri.parse('${Constants.api}/image/upload'),
-                body: {'image': image},
-              ))
+        Uri.parse('${Constants.api}/image/upload'),
+        body: {'image': image},
+      ))
           .then((res) => FaceList.fromJson(jsonDecode(res.body)));
 
       Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (context) => FaceListInput(faceList: faceList)),
+            builder: (context) => FaceListFind(faceList: faceList)),
       );
     }
-  }
-}
-
-class FaceList {
-  final List<Face> faces;
-
-  FaceList({required this.faces});
-
-  factory FaceList.fromJson(Map<String, dynamic> json) {
-    return FaceList(
-        faces: List<Face>.from(json['faces'].map((f) => Face.fromJson(f))));
-  }
-}
-
-class Face {
-  final String face;
-  final List<double> embedding;
-
-  Face({required this.face, required this.embedding});
-
-  factory Face.fromJson(Map<String, dynamic> json) {
-    return Face(
-        face: json['face'], embedding: json['embedding'].cast<double>());
   }
 }

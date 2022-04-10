@@ -1,6 +1,8 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:myapp/screens/camera_search.dart';
+import 'package:myapp/screens/find.dart';
 
 import 'screens/home.dart';
 import 'screens/camera.dart';
@@ -17,13 +19,12 @@ void main() {
   HttpOverrides.global = MyHttpOverrides();
 
   runApp(MaterialApp(
-    theme: ThemeData(
-      brightness: Brightness.dark
-    ),
     title: 'DataNet',
     routes: {
       '/': (context) => const Home(),
       '/camera': (context) => const Camera(),
+      '/cameraSearch': (context) => const CameraSearch(),
+      '/find': (context) => const Find(),
     },
   ));
 }

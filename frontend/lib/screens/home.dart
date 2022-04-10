@@ -44,7 +44,7 @@ class Home extends StatelessWidget {
                   ),
                 ),
                 OutlinedButton(
-                  onPressed: () {},
+                  onPressed: () => Navigator.pushNamed(context, '/cameraSearch'),
                   child: const SizedBox.expand(
                     child: FittedBox(
                       child: Icon(Icons.person_search),
@@ -54,19 +54,22 @@ class Home extends StatelessWidget {
                 OutlinedButton(
                   onPressed: () async {
                     JsonElement search = await Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) =>
-                              const Input(example: '{}', buttonText: 'Search')),
-                    ) ?? JsonElement(value: '{}');
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const Input(
+                                  example: '{}', buttonText: 'Search')),
+                        ) ??
+                        JsonElement(value: '{}');
 
-                    final users = http.post(
-                      Uri.parse('${Constants.api}/users/search'),
-                      headers: {
-                        HttpHeaders.contentTypeHeader: 'application/json'
-                      },
-                      body: search.toString(),
-                    ).then((res) => res.body);
+                    final users = http
+                        .post(
+                          Uri.parse('${Constants.api}/users/search'),
+                          headers: {
+                            HttpHeaders.contentTypeHeader: 'application/json'
+                          },
+                          body: search.toString(),
+                        )
+                        .then((res) => res.body);
 
                     Navigator.push(
                       context,
