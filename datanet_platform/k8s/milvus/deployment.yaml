@@ -35,8 +35,7 @@ spec:
               mountPath: /etcd
               subPath: etcd-storage
         - name: datanet-milvus
-#          image: milvusdb/milvus:v2.0.1
-          image: milvusdb/daily-build:master-20220302-27a7875a
+          image: milvusdb/milvus:v2.0.2
           command: ["milvus"]
           args: ["run", "standalone"]
           env:
