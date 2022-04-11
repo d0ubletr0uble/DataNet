@@ -14,7 +14,7 @@ class Milvus:
         if not utility.has_collection('users'):
             schema = CollectionSchema([
                 FieldSchema(name='_id', dtype=DataType.INT64, is_primary=True, auto_id=True),
-                FieldSchema(name='embeddings', dtype=DataType.FLOAT_VECTOR, dim=128)
+                FieldSchema(name='embedding', dtype=DataType.FLOAT_VECTOR, dim=128)
             ])
             # TODO index
 

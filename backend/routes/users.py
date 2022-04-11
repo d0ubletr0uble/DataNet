@@ -89,3 +89,32 @@ async def edit_user(user_id: str, req: Request):
     )
 
     return data
+
+
+class FindInput(BaseModel):
+    embedding: List[float]
+
+
+# todo api doc
+@router.post('/find', status_code=http.HTTPStatus.OK)
+async def edit_user(req: FindInput):
+    milvus.users.load()
+
+    results = milvus.users.search(
+        data=[req.embedding],
+        anns_field='embedding',
+        param={'metric_type': 'L2'},
+        limit=3,
+    )[0]
+
+    milvus.users.release()
+
+    quantify = lambda x: 'Strong' if x < 100 else 'Medium' if x < 150 else 'Weak'
+
+    return {'users': [
+        {
+            'similarity': quantify(dis),
+            'data': mongodb.users.find_one({'_id': str(id)}),  # NOTE: performance
+        }
+        for dis, id in zip(results.distances, results.ids)
+    ]}
