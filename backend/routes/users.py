@@ -113,6 +113,7 @@ async def edit_user(req: FindInput):
 
     return {'users': [
         {
+            '_id': str(id),
             'similarity': quantify(dis),
             'data': mongodb.users.find_one({'_id': str(id)}),  # NOTE: performance
         }
