@@ -7,6 +7,6 @@ numpy==1.19.5
 mtcnn==0.1.1
 tensorflow==2.6.2
 pymongo==4.0.2
-pymilvus==2.0.1
+pymilvus==2.0.2
 Pillow==8.4.0
 boto3==1.21.32
