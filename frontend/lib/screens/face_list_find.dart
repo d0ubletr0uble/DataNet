@@ -89,7 +89,7 @@ class FaceSearchRow extends StatelessWidget {
                   style: TextStyle(color: Colors.white),
                 ),
                 onPressed: () async {
-                  final users = await http
+                  final users = http
                       .post(
                         Uri.parse("${Constants.api}/users/find"),
                         headers: {

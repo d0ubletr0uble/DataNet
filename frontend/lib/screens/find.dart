@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 
 import '../constants.dart';
+import 'loading.dart';
 
 class UserCard extends StatelessWidget {
   final String id;
@@ -73,7 +74,8 @@ class Find extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final args = ModalRoute.of(context)!.settings.arguments as List<UserCard>;
+    final args =
+        ModalRoute.of(context)!.settings.arguments as Future;
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
@@ -81,30 +83,39 @@ class Find extends StatelessWidget {
         title: const Text('DataNet'),
         backgroundColor: Colors.blue,
       ),
-      body: Column(
-        children: <Widget>[
-          Center(
-            child: CarouselSlider(
-              options: CarouselOptions(height: size.height * 0.7),
-              carouselController: buttonCarouselController,
-              items: args,
-            ),
-          ),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              IconButton(
-                onPressed: () => buttonCarouselController.previousPage(),
-                icon: const Icon(Icons.arrow_left),
-              ),
-              IconButton(
-                onPressed: () => buttonCarouselController.nextPage(),
-                icon: const Icon(Icons.arrow_right),
-              ),
-            ],
-          )
-        ],
+      body: FutureBuilder(
+        future: args,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState != ConnectionState.done) {
+            return const LoadingScreen();
+          } else {
+            return Column(
+              children: <Widget>[
+                Center(
+                  child: CarouselSlider(
+                    options: CarouselOptions(height: size.height * 0.7),
+                    carouselController: buttonCarouselController,
+                    items: snapshot.data as List<UserCard>,
+                  ),
+                ),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    IconButton(
+                      onPressed: () => buttonCarouselController.previousPage(),
+                      icon: const Icon(Icons.arrow_left),
+                    ),
+                    IconButton(
+                      onPressed: () => buttonCarouselController.nextPage(),
+                      icon: const Icon(Icons.arrow_right),
+                    ),
+                  ],
+                )
+              ],
+            );
+          }
+        },
       ),
     );
   }
