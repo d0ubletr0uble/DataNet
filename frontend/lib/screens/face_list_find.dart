@@ -2,20 +2,17 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:json_editor/json_editor.dart';
 import 'package:myapp/screens/camera.dart';
-import 'package:myapp/screens/input.dart';
 import 'package:http/http.dart' as http;
 import 'package:myapp/screens/loading.dart';
 
 import '../constants.dart';
-import 'face_list.dart';
+import 'find.dart';
 
 class FaceListFind extends StatelessWidget {
   final Future<FaceList> faceList;
-  final Map<String, FaceUpload> _results = {};
 
-  FaceListFind({Key? key, required this.faceList}) : super(key: key);
+  const FaceListFind({Key? key, required this.faceList}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -91,11 +88,23 @@ class FaceSearchRow extends StatelessWidget {
                   'Search',
                   style: TextStyle(color: Colors.white),
                 ),
-                onPressed: () => Navigator.pushNamed(
-                  context,
-                  '/find',
-                  arguments: this,
-                ),
+                onPressed: () async {
+                  final users = await http
+                      .post(
+                        Uri.parse("${Constants.api}/users/find"),
+                        headers: {
+                          HttpHeaders.contentTypeHeader: 'application/json'
+                        },
+                        body: jsonEncode({'embedding': embedding}),
+                      )
+                      .then((res) => jsonDecode(res.body)['users'].map<UserCard>(UserCard.fromJson).toList());
+
+                  Navigator.pushNamed(
+                    context,
+                    '/find',
+                    arguments: users,
+                  );
+                },
               ),
             ),
             flex: 2,

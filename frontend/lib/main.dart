@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:myapp/screens/camera_search.dart';
 import 'package:myapp/screens/find.dart';
+import 'package:myapp/screens/user_data.dart';
 
 import 'screens/home.dart';
 import 'screens/camera.dart';
@@ -24,7 +25,8 @@ void main() {
       '/': (context) => const Home(),
       '/camera': (context) => const Camera(),
       '/cameraSearch': (context) => const CameraSearch(),
-      '/find': (context) => const Find(),
+      '/find': (context) => Find(),
+      '/user-data': (context) => const UserData(),
     },
   ));
 }

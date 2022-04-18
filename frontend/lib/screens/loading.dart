@@ -8,10 +8,12 @@ class LoadingScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     var w = MediaQuery.of(context).size.width;
 
-    return SpinKitSpinningLines(
-      color: Colors.blue,
-      lineWidth: w / 60,
-      size: w / 4,
+    return Scaffold(
+      body: SpinKitSpinningLines(
+        color: Colors.blue,
+        lineWidth: w / 60,
+        size: w / 4,
+      ),
     );
   }
 }

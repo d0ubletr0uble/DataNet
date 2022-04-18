@@ -37,6 +37,9 @@ dependencies:
   image_picker: ^0.8.4+8
   json_editor: ^0.0.1
   flutter_spinkit: ^5.1.0
+  carousel_slider: ^4.0.0
+  flutter_json_viewer: ^1.0.1
+
 
 flutter_icons:
   android: "launcher_icon"

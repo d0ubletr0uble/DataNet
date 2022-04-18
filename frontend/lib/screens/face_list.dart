@@ -18,18 +18,24 @@ class FaceUpload {
   FaceUpload({required this.face, required this.embedding, required this.data});
 }
 
-class FaceListInput extends StatelessWidget {
+class FaceListInput extends StatefulWidget {
   final Future<FaceList> faceList;
-  final Map<String, FaceUpload> _results = {};
 
-  FaceListInput({Key? key, required this.faceList}) : super(key: key);
+  const FaceListInput({Key? key, required this.faceList}) : super(key: key);
+
+  @override
+  State<FaceListInput> createState() => _FaceListInputState();
+}
+
+class _FaceListInputState extends State<FaceListInput> {
+  final Map<String, FaceUpload> _results = {};
 
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
 
     return FutureBuilder<FaceList>(
-      future: faceList,
+      future: widget.faceList,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
           if (!snapshot.hasData) {
@@ -103,66 +109,78 @@ class FaceListInput extends StatelessWidget {
   }
 }
 
-class FaceRow extends StatelessWidget {
+class FaceRow extends StatefulWidget {
   final String imageString;
   final List<double> embedding;
   final Size size;
   final void Function(JsonElement? data) onSave;
 
-  const FaceRow(
-      {Key? key,
-      required this.size,
-      required this.imageString,
-      required this.embedding,
-      required this.onSave})
-      : super(key: key);
+  const FaceRow({
+    Key? key,
+    required this.size,
+    required this.imageString,
+    required this.embedding,
+    required this.onSave,
+  }) : super(key: key);
+
+  @override
+  State<FaceRow> createState() => _FaceRowState();
+}
+
+class _FaceRowState extends State<FaceRow> {
+  bool filled = false;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
-      child: Row(
-        children: [
-          Flexible(
-            child:
-                Image.memory(base64Decode(imageString), fit: BoxFit.fitHeight),
-            flex: 1,
-            fit: FlexFit.tight,
-          ),
-          Flexible(
-            child: Center(
-              child: TextButton(
-                style: TextButton.styleFrom(
-                    backgroundColor: const Color(0xff337ab7),
-                    textStyle: TextStyle(fontSize: size.width / 22),
-                    padding: EdgeInsets.all(size.height / 25)),
-                child: const Text(
-                  'Enter Data',
-                  style: TextStyle(color: Colors.white),
-                ),
-                onPressed: () async {
-                  final data = await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const Input(
-                        example: '''
-                      {
-                        // Enter JSON data
-                        "name": "John Smith",
-                        "age": 20
-                      }
-                      ''',
-                        buttonText: 'Save',
-                      ),
-                    ),
-                  );
-                  onSave(data);
-                },
-              ),
+      child: Container(
+        color: filled ? const Color(0x37a9fd95) : Colors.transparent,
+        child: Row(
+          children: [
+            Flexible(
+              child: Image.memory(base64Decode(widget.imageString),
+                  fit: BoxFit.fitHeight),
+              flex: 1,
+              fit: FlexFit.tight,
             ),
-            flex: 2,
-          ),
-        ],
+            Flexible(
+              child: Center(
+                child: TextButton(
+                  style: TextButton.styleFrom(
+                      backgroundColor: const Color(0xff337ab7),
+                      textStyle: TextStyle(fontSize: widget.size.width / 22),
+                      padding: EdgeInsets.all(widget.size.height / 25)),
+                  child: const Text(
+                    'Enter Data',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  onPressed: () async {
+                    final data = await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const Input(
+                          example: '''
+                        {
+                          // Enter JSON data
+                          "name": "John Smith",
+                          "age": 20
+                        }
+                        ''',
+                          buttonText: 'Save',
+                        ),
+                      ),
+                    );
+
+                    setState(() => filled = data != null);
+                    widget.onSave(data);
+                  },
+                ),
+              ),
+              flex: 2,
+            ),
+          ],
+        ),
       ),
     );
   }
