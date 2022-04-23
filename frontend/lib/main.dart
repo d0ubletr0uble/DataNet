@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:myapp/screens/camera_mass_assign.dart';
 import 'package:myapp/screens/camera_search.dart';
 import 'package:myapp/screens/find.dart';
 import 'package:myapp/screens/user_data.dart';
@@ -26,7 +27,8 @@ void main() {
       routes: {
         '/': (context) => const Home(),
         '/camera': (context) => const Camera(),
-        '/cameraSearch': (context) => const CameraSearch(),
+        '/camera-search': (context) => const CameraSearch(),
+        '/camera-assign': (context) => const CameraAssign(),
         '/find': (context) => Find(),
         '/user-data': (context) => const UserData(),
       },

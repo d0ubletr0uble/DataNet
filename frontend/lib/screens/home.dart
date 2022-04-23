@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -44,7 +43,8 @@ class Home extends StatelessWidget {
                   ),
                 ),
                 OutlinedButton(
-                  onPressed: () => Navigator.pushNamed(context, '/cameraSearch'),
+                  onPressed: () =>
+                      Navigator.pushNamed(context, '/camera-search'),
                   child: const SizedBox.expand(
                     child: FittedBox(
                       child: Icon(Icons.person_search),
@@ -84,7 +84,17 @@ class Home extends StatelessWidget {
                   ),
                 ),
                 OutlinedButton(
-                  onPressed: () {},
+                  onPressed: () async {
+                    final data = await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const Input(
+                            example: '{}', buttonText: 'Upload Photo'),
+                      ),
+                    ) ?? JsonElement(value: '{}');
+
+                    Navigator.pushNamed(context, '/camera-assign', arguments: data);
+                  },
                   child: const SizedBox.expand(
                     child: FittedBox(
                       child: Icon(Icons.edit),
