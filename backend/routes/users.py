@@ -3,7 +3,7 @@ import json
 from typing import List, Any
 
 import cv2
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Request, Form
 from pydantic import BaseModel
 
 from backend.ai_models import detector
@@ -119,3 +119,30 @@ async def edit_user(req: FindInput):
         }
         for dis, id in zip(results.distances, results.ids)
     ]}
+
+
+@router.post('/batch-edit')
+def upload(image: str = Form(...), data: str = Form(...)):
+    img = utils.base64_to_cv2(image)
+    _, prepared_faces = model.get_faces(img)
+
+    embeddings = model.get_embeddings(prepared_faces)
+
+    milvus.users.load()
+
+    results = milvus.users.search(
+        data=embeddings,
+        anns_field='embedding',
+        param={'metric_type': 'L2'},
+        limit=1,
+    )
+
+    milvus.users.release()
+    ids = [str(x.ids[0]) for x in results if x.distances[0] < 100]
+
+    mongodb.users.update_many(
+        {'_id': {'$in': ids}},
+        {'$set': json.loads(data)}
+    )
+
+    return {'updated': len(ids)}
