@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: datanet-milvus
-          image: milvusdb/milvus:v2.0.0
+          image: milvusdb/milvus:latest
           command: ["milvus"]
           args: ["run", "standalone"]
           env:
