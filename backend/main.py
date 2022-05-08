@@ -16,7 +16,7 @@ app.add_middleware(
 )
 
 app.include_router(image.router, prefix='/image', tags=['image'])
-app.include_router(users.router, prefix='/users', tags=['image'])
+app.include_router(users.router, prefix='/users', tags=['users'])
 
 detector = facenet.instance
 
