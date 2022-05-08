@@ -19,9 +19,9 @@ spec:
             - name: ETCD_AUTO_COMPACTION_MODE
               value: revision
             - name: ETCD_AUTO_COMPACTION_RETENTION
-              value: "1000"
+              value: 1000
             - name: ETCD_QUOTA_BACKEND_BYTES
-              value: "4294967296"
+              value: 4294967296
           command: ["etcd"]
           args: [
             "-advertise-client-urls", "http://127.0.0.1:2379",

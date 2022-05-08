@@ -59,15 +59,16 @@ async def upload(req: FaceList):
     faces = [utils.base64_to_cv2(f.face) for f in req.faces]
 
     # data persistence
-    resp = milvus.users.insert([[f.embedding for f in req.faces]])
+    _, ids = milvus.milvus.insert(collection_name='users', records=[f.embedding for f in req.faces])
+    milvus.milvus.flush(['users'])
 
     mongodb.users.insert_many([
         {'_id': str(pk), **f.data}
         for f, pk
-        in zip(req.faces, resp.primary_keys)
+        in zip(req.faces, ids)
     ])
 
-    for face, key in zip(faces, resp.primary_keys):
+    for face, key in zip(faces, ids):
         s3.put_object(
             ACL='public-read',
             Bucket='users',
@@ -98,16 +99,11 @@ class FindInput(BaseModel):
 # todo api doc
 @router.post('/find', status_code=http.HTTPStatus.OK)
 async def edit_user(req: FindInput):
-    milvus.users.load()
-
-    results = milvus.users.search(
-        data=[req.embedding],
-        anns_field='embedding',
-        param={'metric_type': 'L2'},
-        limit=3,
-    )[0]
-
-    milvus.users.release()
+    _, results = milvus.milvus.search(
+        collection_name='users',
+        query_records=[req.embedding],
+        top_k=3,
+    )
 
     quantify = lambda x: 'Strong' if x < 100 else 'Medium' if x < 150 else 'Weak'
 
@@ -117,7 +113,7 @@ async def edit_user(req: FindInput):
             'similarity': quantify(dis),
             'data': mongodb.users.find_one({'_id': str(id)}),  # NOTE: performance
         }
-        for dis, id in zip(results.distances, results.ids)
+        for dis, id in zip(results.distance_array[0], results.id_array[0])
     ]}
 
 
@@ -128,17 +124,13 @@ def upload(image: str = Form(...), data: str = Form(...)):
 
     embeddings = model.get_embeddings(prepared_faces)
 
-    milvus.users.load()
-
-    results = milvus.users.search(
-        data=embeddings,
-        anns_field='embedding',
-        param={'metric_type': 'L2'},
-        limit=1,
+    _, results = milvus.milvus.search(
+        collection_name='users',
+        query_records=embeddings,
+        top_k=1,
     )
 
-    milvus.users.release()
-    ids = [str(x.ids[0]) for x in results if x.distances[0] < 100]
+    ids = [str(id[0]) for id, dis in zip(results.id_array, results.distance_array) if dis[0] < 100]
 
     mongodb.users.update_many(
         {'_id': {'$in': ids}},
