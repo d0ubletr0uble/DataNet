@@ -7,3 +7,6 @@ spec:
     app: datanet-milvus
   ports:
   - port: 19530
+    name: 19530tcp
+  - port: 19121
+    name: 19121tcp

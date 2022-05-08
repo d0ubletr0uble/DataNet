@@ -1,0 +1,50 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: datanet-milvus-config
+data:
+  server_config.yaml: |+
+    version: 0.5
+    cluster:
+      enable: false
+      role: rw
+    general:
+      timezone: UTC+8
+      meta_uri: sqlite://:@:/
+    network:
+      bind.address: 0.0.0.0
+      bind.port: 19530
+      http.enable: true
+      http.port: 19121
+    storage:
+      path: /var/lib/milvus
+      auto_flush_interval: 1
+    wal:
+      enable: true
+      recovery_error_ignore: false
+      buffer_size: 256MB
+      path: /var/lib/milvus/wal
+    cache:
+      cache_size: 2GB
+      insert_buffer_size: 1GB
+      preload_collection:
+    gpu:
+      enable: false
+      cache_size: 1GB
+      gpu_search_threshold: 1000
+      search_devices:
+        - gpu0
+      build_index_devices:
+        - gpu0
+    logs:
+      level: debug
+      trace.enable: true
+      path: /var/lib/milvus/logs
+      max_log_file_size: 1024MB
+      log_rotate_num: 0
+      log_to_stdout: false
+      log_to_file: true
+    metric:
+      enable: false
+      address: 127.0.0.1
+      port: 9091
