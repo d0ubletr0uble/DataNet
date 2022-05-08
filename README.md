@@ -9,6 +9,24 @@ One click deployment
 
 [![Develop on Okteto](https://okteto.com/develop-okteto.svg)](https://cloud.okteto.com/deploy?repository=https://github.com/d0ubletr0uble/DataNet)
 
+### Examples:
+
+Inserting new user data
+
+![](docs/new_user.gif)
+
+Find user by face
+
+![](docs/find_face.gif)
+
+Find user by json query
+
+![](docs/find_json.gif)
+
+Assign data to all users present in picture
+
+![](docs/batch_edit.gif)
+
 <h1 id="fastapi">DataNet API documentation</h1>
 
 <h1 id="fastapi-image">image</h1>
