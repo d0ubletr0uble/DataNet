@@ -14,21 +14,20 @@ spec:
     spec:
       containers:
         - name: datanet-milvus
-          image: milvusdb/milvus:latest
-          command: ["milvus"]
-          args: ["run", "standalone"]
-          env:
-            - name: ETCD_ENDPOINTS
-              value: datanet-etcd:2379
-            - name: MINIO_ADDRESS
-              value: datanet-minio:9000
+          image: milvusdb/milvus:1.0.0-cpu-d030521-1ea92e
           ports:
           - containerPort: 19530
+          - containerPort: 19121
           volumeMounts:
             - name: datanet-volume
               mountPath: /var/lib/milvus
               subPath: milvus-storage
+            - name: config-volume
+              mountPath: /var/lib/milvus/conf
       volumes:
         - name: datanet-volume
           persistentVolumeClaim:
             claimName: datanet-volume
+        - name: config-volume
+          configMap:
+            milvus-config
