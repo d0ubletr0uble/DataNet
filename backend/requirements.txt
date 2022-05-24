@@ -5,7 +5,7 @@ python-multipart==0.0.5
 opencv-python==4.5.5.62
 numpy==1.19.5
 mtcnn==0.1.1
-tensorflow==2.6.2
+tensorflow==2.6.4
 pymongo==4.0.2
 pymilvus==1.0.1
 Pillow==8.4.0
