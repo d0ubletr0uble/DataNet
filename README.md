@@ -9,6 +9,8 @@ One click deployment
 
 [![Develop on Okteto](https://okteto.com/develop-okteto.svg)](https://cloud.okteto.com/deploy?repository=https://github.com/d0ubletr0uble/DataNet)
 
+![](docs/pipeline.gif)
+
 ### Examples:
 
 Inserting new user data
