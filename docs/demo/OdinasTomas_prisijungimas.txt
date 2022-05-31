@@ -1,0 +1,6 @@
+# Grafinė naudotojo sąsaja
+http://data-net.ml
+
+# Kodo repozitorija su API sąsajos vadovu ir APK paketu Android įrenginiams
+https://github.com/d0ubletr0uble/DataNet
+
