@@ -3,7 +3,7 @@ uvicorn[standard]
 pydantic==1.9.0
 python-multipart==0.0.5
 opencv-python==4.5.5.62
-numpy==1.19.5
+numpy==1.22.0
 mtcnn==0.1.1
 tensorflow==2.6.2
 pymongo==4.0.2
